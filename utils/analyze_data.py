@@ -1,58 +1,125 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 from collections import Counter
+import logging
+from pathlib import Path
+import re
+from transformers import CamembertTokenizer
 
-# Load the dataset
-print("Loading dataset...")
-df = pd.read_csv('upda_dataset.csv', sep=';')
+# Configuration du logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
-# Basic statistics
-print("\n=== Basic Statistics ===")
-print(f"Total number of examples: {len(df)}")
-print(f"Number of features: {len(df.columns)}")
-print("\nColumns:", df.columns.tolist())
+class DataAnalyzer:
+    def __init__(self, data_path):
+        self.data_path = Path(data_path)
+        if not self.data_path.exists():
+            raise FileNotFoundError(f"Fichier de données introuvable: {data_path}")
+        
+        # Chargement des données
+        self.df = pd.read_csv(self.data_path, sep=';')
+        self.tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
+        
+    def basic_stats(self):
+        """Analyse statistique de base"""
+        logger.info("\n=== Statistiques de base ===")
+        logger.info(f"Nombre total d'exemples: {len(self.df)}")
+        
+        # Distribution des classes
+        class_dist = self.df['label'].value_counts()
+        logger.info("\nDistribution des classes:")
+        for label, count in class_dist.items():
+            percentage = (count / len(self.df)) * 100
+            logger.info(f"Classe {label}: {count} exemples ({percentage:.2f}%)")
+            
+        # Longueur des textes
+        self.df['text_length'] = self.df['text'].str.len()
+        logger.info("\nStatistiques de longueur des textes:")
+        logger.info(self.df['text_length'].describe())
+        
+    def token_analysis(self):
+        """Analyse des tokens"""
+        logger.info("\n=== Analyse des tokens ===")
+        
+        # Tokenization de tous les textes
+        all_tokens = []
+        for text in self.df['text']:
+            tokens = self.tokenizer.tokenize(text)
+            all_tokens.extend(tokens)
+        
+        # Statistiques des tokens
+        token_counter = Counter(all_tokens)
+        logger.info(f"Nombre total de tokens: {len(all_tokens)}")
+        logger.info(f"Nombre de tokens uniques: {len(token_counter)}")
+        
+        # Top 20 tokens les plus fréquents
+        logger.info("\nTop 20 tokens les plus fréquents:")
+        for token, count in token_counter.most_common(20):
+            logger.info(f"{token}: {count}")
+            
+    def visualize_distributions(self):
+        """Visualisation des distributions"""
+        # Création du dossier pour les graphiques
+        output_dir = Path('results/analysis')
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Distribution des classes
+        plt.figure(figsize=(10, 6))
+        sns.countplot(data=self.df, x='label')
+        plt.title('Distribution des Classes')
+        plt.savefig(output_dir / 'class_distribution.png')
+        plt.close()
+        
+        # Distribution des longueurs de texte
+        plt.figure(figsize=(10, 6))
+        sns.histplot(data=self.df, x='text_length', hue='label', multiple="stack")
+        plt.title('Distribution des Longueurs de Texte par Classe')
+        plt.savefig(output_dir / 'text_length_distribution.png')
+        plt.close()
+        
+    def analyze_by_class(self):
+        """Analyse détaillée par classe"""
+        logger.info("\n=== Analyse par classe ===")
+        
+        for label in self.df['label'].unique():
+            class_df = self.df[self.df['label'] == label]
+            logger.info(f"\nClasse {label}:")
+            logger.info(f"Nombre d'exemples: {len(class_df)}")
+            logger.info(f"Longueur moyenne des textes: {class_df['text_length'].mean():.2f}")
+            logger.info(f"Longueur médiane des textes: {class_df['text_length'].median():.2f}")
+            
+            # Top 10 mots les plus fréquents pour cette classe
+            all_tokens = []
+            for text in class_df['text']:
+                tokens = self.tokenizer.tokenize(text)
+                all_tokens.extend(tokens)
+            
+            token_counter = Counter(all_tokens)
+            logger.info("\nTop 10 tokens les plus fréquents:")
+            for token, count in token_counter.most_common(10):
+                logger.info(f"{token}: {count}")
 
-# Class distribution
-print("\n=== Class Distribution ===")
-class_counts = df['labels'].value_counts()
-print("\nClass distribution:")
-print(class_counts)
-print("\nClass percentages:")
-print((class_counts / len(df) * 100).round(2))
+def main():
+    try:
+        # Initialisation de l'analyseur
+        analyzer = DataAnalyzer('data/dataset_v2.csv')
+        
+        # Exécution des analyses
+        analyzer.basic_stats()
+        analyzer.token_analysis()
+        analyzer.visualize_distributions()
+        analyzer.analyze_by_class()
+        
+        logger.info("\nAnalyse terminée avec succès!")
+        
+    except Exception as e:
+        logger.error(f"Erreur lors de l'analyse: {str(e)}")
+        raise
 
-# Text length statistics
-print("\n=== Text Length Statistics ===")
-df['text_length'] = df['text'].str.len()
-print("\nText length statistics (in characters):")
-print(df['text_length'].describe())
-
-# Sample examples
-print("\n=== Sample Examples ===")
-print("\nSample of harassment examples (label=1):")
-print(df[df['labels'] == 1]['text'].head(3).to_string())
-print("\nSample of non-harassment examples (label=0):")
-print(df[df['labels'] == 0]['text'].head(3).to_string())
-
-# Word frequency analysis
-print("\n=== Word Frequency Analysis ===")
-# Combine all texts and split into words
-all_words = ' '.join(df['text'].astype(str)).lower().split()
-word_freq = Counter(all_words)
-print("\nMost common words:")
-print(word_freq.most_common(10))
-
-# Save the analysis results
-with open('data_analysis.txt', 'w', encoding='utf-8') as f:
-    f.write("=== Dataset Analysis Report ===\n\n")
-    f.write(f"Total examples: {len(df)}\n")
-    f.write(f"Class distribution:\n{class_counts}\n\n")
-    f.write(f"Text length statistics:\n{df['text_length'].describe()}\n\n")
-    f.write("Sample harassment examples:\n")
-    f.write(df[df['labels'] == 1]['text'].head(3).to_string() + "\n\n")
-    f.write("Sample non-harassment examples:\n")
-    f.write(df[df['labels'] == 0]['text'].head(3).to_string() + "\n\n")
-    f.write("Most common words:\n")
-    f.write(str(word_freq.most_common(10)))
-
-print("\nAnalysis complete! Results have been saved to 'data_analysis.txt'") 
+if __name__ == "__main__":
+    main() 
