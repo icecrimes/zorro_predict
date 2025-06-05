@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+
+# Project specific
+results/
+
+# Environment variables
+.env
+
+# Results and logs
+logs/

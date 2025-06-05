@@ -1,0 +1,32 @@
+=== Dataset Analysis Report ===
+
+Total examples: 18071
+Class distribution:
+labels
+0    13731
+1     4340
+Name: count, dtype: int64
+
+Text length statistics:
+count    18071.000000
+mean       112.706712
+std         72.377949
+min          2.000000
+25%         55.000000
+50%        103.000000
+75%        145.000000
+max        334.000000
+Name: text_length, dtype: float64
+
+Sample harassment examples:
+0    On ne peut pas faire confiance aux musulmans c...
+1       Les musulmans ne sont pas dignes de confiance.
+2            Vous ne devriez pas croire les musulmans.
+
+Sample non-harassment examples:
+151     Alors julie t'ai dégeulasse de sortir avec un...
+152                               allo mme est homophobe
+154     on est pas ensemble déjà puis même si c'était...
+
+Most common words:
+[('@user', 14335), ('de', 11397), ('la', 6972), ('le', 6169), ('les', 5598), ('et', 5294), ('un', 3642), ('des', 3570), ('pas', 3490), ('que', 3378)]
