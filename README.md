@@ -64,6 +64,7 @@ Le script d'entraînement va :
 ### Téléchargement du Modèle
 
 Si l'entraînement est trop long, un modèle est disponible sur le drive partagé à l'URL indiqué dans ./models/
+
 Dézipper le dossier model_v2/ dans ./models/
 
 ### Faire des Prédictions
