@@ -16,7 +16,7 @@ Ce projet implémente un système de classification de texte capable de détecte
 
 1. Cloner le dépôt :
 ```bash
-git clone [url-du-dépôt]
+git clone https://github.com/icecrimes/zorro_predict.git
 cd zorro_predict
 ```
 
@@ -60,6 +60,12 @@ Le script d'entraînement va :
 - Entraîner le modèle avec arrêt anticipé
 - Sauvegarder le meilleur point de contrôle du modèle
 - Générer les métriques d'évaluation
+
+### Téléchargement du Modèle
+
+Si l'entraînement est trop long, un modèle est disponible sur le drive partagé à l'URL indiqué dans ./models/
+
+Dézipper le dossier model_v2/ dans ./models/
 
 ### Faire des Prédictions
 
