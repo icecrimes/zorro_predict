@@ -13,6 +13,9 @@ from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 import logging
 import os
 from datetime import datetime
+from sklearn.metrics import confusion_matrix, classification_report
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Set up logging
 logging.basicConfig(
@@ -82,7 +85,7 @@ def compute_loss(model, inputs, return_outputs=False):
 def main():
     # Create timestamp for unique run
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = f'./results/run_{timestamp}'
+    output_dir = f'./results/binary/run_{timestamp}'
     os.makedirs(output_dir, exist_ok=True)
     
     # Load and preprocess data
@@ -159,6 +162,30 @@ def main():
     logger.info("\nFinal metrics:")
     for metric, value in final_metrics.items():
         logger.info(f"{metric}: {value:.4f}")
+
+    # Génération et sauvegarde de la matrice de confusion
+    logger.info("Calcul de la matrice de confusion sur le jeu de validation...")
+    # Prédictions sur le jeu de validation
+    val_preds_output = trainer.predict(val_dataset)
+    y_true = val_preds_output.label_ids
+    y_pred = val_preds_output.predictions.argmax(-1)
+
+    cm = confusion_matrix(y_true, y_pred)
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Non-harcèlement', 'Harcèlement'], yticklabels=['Non-harcèlement', 'Harcèlement'])
+    plt.xlabel('Prédictions')
+    plt.ylabel('Valeurs réelles')
+    plt.title('Matrice de confusion (validation)')
+    plt.tight_layout()
+    plt.savefig(f'{output_dir}/confusion_matrix.png', dpi=300)
+    plt.close()
+
+    # Statistiques détaillées
+    report = classification_report(y_true, y_pred, target_names=['Non-harcèlement', 'Harcèlement'])
+    with open(f'{output_dir}/confusion_matrix_stats.txt', 'w', encoding='utf-8') as f:
+        f.write(report)
+
+    logger.info("Matrice de confusion et statistiques sauvegardées dans le dossier de sortie.")
     
     # Save model and tokenizer
     logger.info("Saving model and tokenizer...")

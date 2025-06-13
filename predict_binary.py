@@ -4,6 +4,10 @@ import json
 import logging
 from pathlib import Path
 
+EXAMPLES_PATH = 'data/exemples.txt'
+MODEL_PATH = f'models/model_multiclasses'
+LABEL_MAP_PATH = f'models/model_multiclasses/label_mapping.csv'
+
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
@@ -55,7 +59,7 @@ class HarassmentPredictor:
 def main():
     try:
         # Initialize predictor
-        model_path = 'models/model_v2'
+        model_path = 'models/model_binaire'
         predictor = HarassmentPredictor(model_path)
         
         # Lire les exemples depuis le fichier
@@ -65,7 +69,7 @@ def main():
         # Analyser chaque texte
         for i, text in enumerate(textes, 1):
             print(f"\n{'='*50}")
-            print(f"Exemple {i}: {text}")
+            print(f"Exemple {i + 1}: {text}")
             print(f"{'='*50}")
         
             # Get prediction

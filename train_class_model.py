@@ -14,6 +14,12 @@ import logging
 import os
 from datetime import datetime
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import confusion_matrix, classification_report
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
 
 # Set up logging
 logging.basicConfig(
@@ -83,11 +89,11 @@ def compute_loss(model, inputs, return_outputs=False):
 def main():
     # Create timestamp for unique run
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = f'./results/type_classification_{timestamp}'
+    output_dir = f'./results/multiclass/run_{timestamp}'
     os.makedirs(output_dir, exist_ok=True)
     
     # Load and preprocess data
-    dataset_url = 'data/labels.csv'
+    dataset_url = 'data/type_vf.csv'
     logger.info("Loading dataset..." + dataset_url)
     df = pd.read_csv(dataset_url, sep=';')
     
@@ -148,7 +154,7 @@ def main():
     # Training arguments
     training_args = TrainingArguments(
         output_dir=output_dir,
-        num_train_epochs=50,
+        num_train_epochs=100,
         per_device_train_batch_size=32,
         per_device_eval_batch_size=32,
         learning_rate=2e-5,
@@ -193,6 +199,36 @@ def main():
     logger.info("\nFinal metrics:")
     for metric, value in final_metrics.items():
         logger.info(f"{metric}: {value:.4f}")
+
+    # Génération et sauvegarde de la matrice de confusion
+    logger.info("Calcul de la matrice de confusion sur le jeu de validation...")
+
+
+    # Prédictions sur le jeu de validation
+    val_preds_output = trainer.predict(val_dataset)
+    y_true = val_preds_output.label_ids
+    y_pred = val_preds_output.predictions.argmax(-1)
+
+    # Charger le mapping des labels
+    label_mapping = pd.read_csv('results/type_classification_20250613_010108/label_mapping.csv')
+    labels = label_mapping['type'].tolist()
+
+    cm = confusion_matrix(y_true, y_pred)
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=labels, yticklabels=labels)
+    plt.xlabel('Prédictions')
+    plt.ylabel('Valeurs réelles')
+    plt.title('Matrice de confusion (validation)')
+    plt.tight_layout()
+    plt.savefig(f'{output_dir}/confusion_matrix.png', dpi=300)
+    plt.close()
+
+    # Statistiques détaillées
+    report = classification_report(y_true, y_pred, target_names=labels)
+    with open(f'{output_dir}/confusion_matrix_stats.txt', 'w', encoding='utf-8') as f:
+        f.write(report)
+
+    logger.info("Matrice de confusion et statistiques sauvegardées dans le dossier de sortie.")
     
     # Save model and tokenizer
     logger.info("Saving model and tokenizer...")

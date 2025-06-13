@@ -1,0 +1,84 @@
+ANALYSE DES DONNÉES DE HARCÈLEMENT
+==================================================
+Date d'analyse: 2025-06-13 11:46:50
+==================================================
+==================================================
+ANALYSE DU FICHIER DATASET_V2.CSV
+==================================================
+
+Nombre total d'exemples: 3161
+Nombre de colonnes: 5
+
+Colonnes présentes:
+- text
+- label
+- type
+- source
+- dataset
+
+Distribution des labels:
+Label 0: 2257 exemples (71.40%)
+Label 1: 904 exemples (28.60%)
+
+Statistiques sur la longueur des textes:
+Longueur moyenne: 38.07 caractères
+Longueur minimale: 2 caractères
+Longueur maximale: 330 caractères
+
+==================================================
+ANALYSE DU FICHIER LABELS_VF.CSV
+==================================================
+
+Nombre total d'exemples: 903
+Nombre de colonnes: 5
+
+Colonnes présentes:
+- text
+- label
+- type
+- source
+- dataset
+
+Distribution des labels:
+Label 1: 902 exemples (99.89%)
+Label 0: 1 exemples (0.11%)
+
+Distribution des types:
+Type injure: 384 exemples (42.52%)
+Type religion: 160 exemples (17.72%)
+Type sexisme: 129 exemples (14.29%)
+Type physique: 90 exemples (9.97%)
+Type racisme: 85 exemples (9.41%)
+Type homophobie: 55 exemples (6.09%)
+
+Distribution des sources:
+Source role_playing_game: 753 exemples (83.39%)
+Source NGO: 150 exemples (16.61%)
+
+Statistiques sur la longueur des textes:
+Longueur moyenne: 41.17 caractères
+Longueur minimale: 3 caractères
+Longueur maximale: 156 caractères
+
+20 mots les plus fréquents:
+de: 200 occurrences
+les: 184 occurrences
+la: 168 occurrences
+tu: 140 occurrences
+pas: 120 occurrences
+ta: 104 occurrences
+le: 94 occurrences
+toi: 90 occurrences
+et: 86 occurrences
+va: 78 occurrences
+a: 77 occurrences
+te: 74 occurrences
+une: 68 occurrences
+que: 66 occurrences
+musulmans: 65 occurrences
+on: 64 occurrences
+grosse: 63 occurrences
+est: 62 occurrences
+pute: 62 occurrences
+je: 61 occurrences
+

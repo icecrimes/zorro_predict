@@ -5,9 +5,10 @@ import numpy as np
 import os
 import sys
 
-MODEL_PATH = f'results/type_classification_20250610_113700/final_model'
-LABEL_MAP_PATH = f'results/type_classification_20250610_113700/label_mapping.csv'
 EXAMPLES_PATH = 'data/exemples.txt'
+MODEL_PATH = f'models/model_multiclasses'
+LABEL_MAP_PATH = f'models/model_multiclasses/label_mapping.csv'
+
 
 # Charger le mapping label -> type
 label_map_df = pd.read_csv(LABEL_MAP_PATH)
@@ -41,6 +42,7 @@ if __name__ == "__main__":
     model = CamembertForSequenceClassification.from_pretrained(MODEL_PATH)
     model = model.to(device)
 
+
     # Charger les exemples
     with open(EXAMPLES_PATH, encoding='utf-8') as f:
         texts = [line.strip() for line in f if line.strip()]
@@ -49,6 +51,8 @@ if __name__ == "__main__":
 
     for i, (text, pred, prob) in enumerate(zip(texts, preds, probs)):
         type_name = label2type[pred]
-        print(f"Texte {i+1}: {text}")
+        print(f"\n{'='*50}")
+        print(f"Exemple {i + 1}: {text}")
+        print(f"{'='*50}")
         print(f"  → Prédiction: {type_name}")
         print(f"  Scores: { {label2type[j]: float(f'{p:.3f}') for j, p in enumerate(prob)} }\n") 
