@@ -1,0 +1,12 @@
+texte,is_harassment,confiance_binaire,prediction_type,confiance_type
+je t'apprécie beaucoup,0,0.06,,
+merci pour ton aide précieuse,0,0.06,,
+j'ai passé une excellente journée,0,0.06,,
+salut ca va ?,0,0.06,,
+jules t'es super laid,1,0.65,physique,0.97
+fdp retourne dans ton pays,1,0.88,racisme,0.97
+va te faire foutre espèce de con,1,0.88,injure,0.99
+ta gueule sale merde,1,0.89,injure,0.99
+t'es vraiment un gros lard,1,0.87,physique,0.97
+tu me fais chier avec tes conneries,1,0.76,injure,0.99
+sale gay retourne sucer des bite,1,0.88,homophobie,0.94
